@@ -1,0 +1,65 @@
+!!!
+%html
+  %head
+    %title GushControlTest
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = stylesheet_link_tag    'index', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_include_tag 'index', 'data-turbolinks-track': 'reload'
+
+  %body
+    = yield
+    #modalBox.reveal-modal.text-center{ "data-reveal": "data-reval", "data-reveal-id": "modalBox" }
+      .data
+      %a.close-reveal-modal &#215;
+
+    %script{ id: "progress-template", type: "x-tmpl-mustache" }
+      .nice.progress.round
+        %span.meter.label{ style: "width: {{progress}}%" }
+    %script{ id: "status-template", type: "x-tmpl-mustache" }
+      %span.round.label{ class: "{{class}}" }
+        {{status}}
+    %script{ id: "workflow-template", type: "x-tmpl-mustache" }
+      %tr{ id: "{{id}}", "data-name": "{{name}}", "data-finished": "{{finished}}", "data-total": "{{total}}" }
+        %td
+          %a{ href: "/workflows/{{id}}" }
+            {{id}}
+        %td
+          {{name}}
+        %td.progress-container
+          {{> progress}}
+        %td.status
+          {{> status}}
+        %td.started_at
+          {{started_at}}
+        %td.finished_at
+          {{finished_at}}
+        %td
+          {{> action}}
+
+
+    %script{ id: "workflow-action-template", type: "x-tmpl-mustache" }
+      %a{ class: "button tiny radius start-workflow {{classes}}", "data-action": "{{action}}", "data-workflow-id": "{{workflow_id}}" }
+        {{description}}
+
+    %script{ id: "node-template", type:"x-tmpl-mustache" }
+      %tr{ class: "{{class}}" }
+        %td
+          {{name}}
+        %td
+          {{status}}
+        %td
+          {{started_at}}
+        %td
+          {{finished_at}}
+    %script{ id: "machine-template", type:"x-tmpl-mustache" }
+      %tr{ "data-id": "{{pid}}" }
+        %td
+          {{pid}}
+        %td
+          {{host}}
+        %td
+          {{jobs}}
+        %td
+          {{status}}
