@@ -1,0 +1,64 @@
+.row
+  .large-8.columns
+    %h1.workflow-title
+      = @workflow.class
+      %small= @workflow.id
+      %small
+        %a{ href: "/gush/workflows" } Back to list
+  .large-4.columns
+    %br
+    %ul.button-group
+      %li
+        - if !@workflow.started?
+          %a.button.success.small.start-workflow{ "data-action": "start", "data-workflow-id": @workflow.id }
+            Start workflow
+        - elsif !@workflow.finished?
+          %a.button.alert.small.start-workflow{ "data-action": "stop", "data-workflow-id": @workflow.id }
+            Stop workflow
+      %li
+        %a.button.dropdown.small{ "data-dropdown": "drop" }
+          Options
+          %span{ "data-dropdown": "drop" }
+
+    %ul#drop.f-dropdown{ "data-dropdown-content": true }
+      %li
+        %a.retry-workflow{ "data-workflow-id": @workflow.id, href: "#" } Restart failed jobs
+      %li
+        %a.destroy-workflow{ "data-workflow-id": @workflow.id, href: "#" } Delete workflow
+.row
+  .large-12.columns
+    %svg{ "data-workflow-id": @workflow.id, width: "100%", height: "400", id: "canvas-#{@workflow.id}" }
+      %g.viewport
+.row
+  .large-12.columns
+    %h2 Jobs
+    %dl.sub-nav.jobs-filter
+      %dt Filter:
+      %dd.active
+        %a{ "data-filter": "all" } All
+      %dd
+        %a{ "data-filter": "waiting" } Waiting
+      %dd
+        %a{ "data-filter": "enqueued" } Enqueued
+      %dd
+        %a{ "data-filter": "failed" } Failed
+      %dd
+        %a{ "data-filter": "finished" } Finished
+    %table.jobs
+      %thead
+        %th Name
+        %th Status
+        %th Started at
+        %th Finished at
+      %tbody
+
+#jobs{ "data-list": JSON.dump(@jobs) }
+#links{ "data-list": JSON.dump(@links) }
+
+:javascript
+  var jobs = $('#jobs').data('list')
+  var links = $('#links').data('list')
+  console.log(jobs)
+  graph = new Graph("canvas-#{@workflow.id}")
+  graph.populate(jobs, links)
+  graph.render()
