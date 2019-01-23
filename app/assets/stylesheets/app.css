@@ -1,0 +1,74 @@
+table.workflows {
+  width: 100%;
+}
+
+text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+  font-size: 14px;
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node rect {
+  stroke-width: 1.5px;
+  stroke: #333;
+  fill: #fff;
+}
+
+.node.start rect {
+  fill: #f77;
+}
+
+.node.failed rect {
+  stroke: #f77;
+}
+
+.node.end rect {
+  fill: #7f7;
+}
+
+.node.status-finished.status-failed rect {
+  stroke: red;
+  fill: red;
+}
+
+.node.status-finished.status-failed text {
+  fill: white;
+}
+
+.node.status-finished rect {
+  stroke: #7f7;
+  fill: #7f7;
+}
+
+.node.status-enqueued rect {
+  stroke: lightblue;
+  fill: lightblue;
+}
+
+.edgeLabel rect {
+  fill: #fff;
+}
+
+.edgePath path {
+  stroke: #333;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+ul.logs {
+  border: 1px solid;
+  height: 500px;
+  overflow: scroll;
+  list-style-type: none;
+  background: black;
+}
+
+ul.logs li{
+  color: wheat;
+  font-family: monospace;
+  white-space: pre-wrap;
+}

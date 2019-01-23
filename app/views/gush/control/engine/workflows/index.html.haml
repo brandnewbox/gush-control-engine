@@ -1,0 +1,29 @@
+.row
+  .large-12.columns
+    %h1 
+      Registered workflows
+      %a.remove-completed.radius.button.alert.right{ href:"#" }
+        Purge completed
+
+    #table.workflows{ "data-workflows": @workflows.to_json } 
+      %thead
+        %th ID
+        %th Name
+        %th Progress
+        %th Status
+        %th Started at
+        %th Finished at
+        %th Action
+
+      %tbody
+        %tr
+          %td.text-center{ colspan: 4 } Loading…
+    %h1 Registered machines
+
+    %table.machines
+      %thead
+        %th PID
+        %th Host
+        %th Enqueued jobs
+        %th Status
+      %tbody
