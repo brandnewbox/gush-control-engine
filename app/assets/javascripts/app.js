@@ -38,12 +38,12 @@ $(document).ready(function() {
     return Gush.retryWorkflow($(this).data("workflow-id"), $(this));
   });
 
-  $(this).on("dblclick", "svg .node", function(event) {
+  $(this).on("click", "svg .node", function(event) {
     event.preventDefault();
     const workflow_id = $(this).closest('svg').data('workflow-id');
     const name = $(this).data('job-name');
     if ((name !== "Start") && (name !== "End")) {
-      return window.location.href = `${Gush.appPrefix}/jobs/${workflow_id}.${name}`;
+      return window.location.href = `/gush/workflows/${workflow_id}/jobs/${name}`;
     }
   });
 

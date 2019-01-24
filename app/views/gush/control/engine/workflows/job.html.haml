@@ -1,0 +1,30 @@
+.row
+  .large-8.columns
+    %h1
+      - case
+      - when @job.failed?
+        %span.label.alert Failed
+      - when @job.enqueued?
+        %span.label.secondary Enqueued
+      - when @job.running?
+        %span.label Running
+      - when @job.finished?
+        %span.label.success Finished
+      - else
+        %span.label.secondary Pending
+      = @job.name
+      %small= @workflow.id
+      %small
+        %a{ href: "/gush/workflows/show/#{@workflow.id}" } Back to workflow
+  .large-4.columns
+    %br
+    %a.button.alert.small.radius.remove-logs{ "data-workflow-id": @workflow.id, "data-job-name": @job.name }
+      Remove logs
+    - if @job.finished? && @job.failed?
+      %a.button.alert.small.radius.start-job{ "data-workflow-id": @workflow.id, "data-job-name": @job.name }
+        Restart job
+%h2 Logs
+%ul.logs
+
+:javascript
+  Gush.registerLogsSocket("#{@workflow.id}", "#{@job.class.name}")

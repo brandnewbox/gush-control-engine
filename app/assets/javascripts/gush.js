@@ -120,7 +120,7 @@ this.Gush = class Gush {
 
   startJob(workflow, job, el) {
     return $.ajax({
-      url: `/gush/workflows/start/${workflow}/${job}`,
+      url: `/gush/workflows/start/${workflow}/job/${job}`,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -133,7 +133,7 @@ this.Gush = class Gush {
 
   stopWorkflow(workflow, el) {
     $.ajax({
-      url: `/gush/workflows/stop/` + workflow,
+      url: `/gush/workflows/stop_workflow/` + workflow,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -151,7 +151,7 @@ this.Gush = class Gush {
 
   retryWorkflow(workflow_id) {
     return $.ajax({
-      url: `/gush/workflows/show/${workflow_id}.json`,
+      url: `/gush/workflows/${workflow_id}/restart_failed_jobs`,
       type: "GET",
       success: response => {
         return response.jobs.each(job => {
@@ -178,7 +178,7 @@ this.Gush = class Gush {
 
   destroyWorkflow(workflow) {
     return $.ajax({
-      url: `/gush/workflows/destroy/` + workflow,
+      url: `/gush/workflows/purge/` + workflow,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -191,7 +191,7 @@ this.Gush = class Gush {
 
   removeCompleted() {
     return $.ajax({
-      url: `/gush/workflows/purge`,
+      url: `/gush/workflows/purge_all`,
       type: "POST",
       error(response) {
         return console.log(response);

@@ -58,7 +58,6 @@
 :javascript
   var jobs = $('#jobs').data('list')
   var links = $('#links').data('list')
-  console.log(jobs)
   graph = new Graph("canvas-#{@workflow.id}")
   graph.populate(jobs, links)
   graph.render()
