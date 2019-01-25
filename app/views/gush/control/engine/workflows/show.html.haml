@@ -2,9 +2,8 @@
   .large-8.columns
     %h1.workflow-title
       = @workflow.class
-      %small= @workflow.id
-      %small
-        =link_to "Back to list", workflows_path
+    %h4= @workflow.id
+    %h4=link_to "← Back", workflows_path
   .large-4.columns
     %br
     %ul.button-group

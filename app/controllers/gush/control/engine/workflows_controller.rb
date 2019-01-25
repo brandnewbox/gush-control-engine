@@ -5,7 +5,7 @@ module Gush
         layout 'gush/control/engine/layouts/application'
         protect_from_forgery with: :exception
         skip_before_action :verify_authenticity_token
-        before_action :set_workflow, only: [:show, :restart_failed_jobs, :purge, :stop_workflow, :start_workflow]        
+        before_action :set_workflow, only: [:show, :restart_failed_jobs, :purge, :stop, :start]        
 
         def index          
           @workflows = gush.all_workflows
@@ -32,13 +32,13 @@ module Gush
         end
 
         def stop
-          gush.stop_workflow(@workflow)
-          @workflow.to_json
+          gush.stop_workflow(@workflow.id)
+          render json: @workflow.to_json
         end
 
         def start
           gush.start_workflow(@workflow, [])
-          @workflow.to_json
+          render json: @workflow.to_json
         end
 
         private

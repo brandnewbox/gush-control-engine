@@ -14,15 +14,25 @@ this.Gush = class Gush {
   }
 
   initialize(jobs) {
-    this.registerNewWorkflowsSocket();
-    this.registerWorkflowsSockets();    
+    this.registerSockets();     
     this.displayCurrentWorkflows();
     return this.displayJobsOverview(jobs);
   }
 
   registerSockets() {
-    this.registerWorkflowsSocket();
-    return this.registerMachinesSocket();
+    switch (window.currentSockets) {
+      case 'workflows_index':
+        this.registerNewWorkflowsSocket();
+        this.registerWorkflowsSockets(); 
+        break;
+      case 'workflows_show':
+        console.log('Make the sockets work here!')
+        break;
+      case 'jobs_show':
+        console.log('Make the sockets work here also!')
+        break;
+    }
+    
   }
 
   displayCurrentWorkflows() {
@@ -75,10 +85,12 @@ this.Gush = class Gush {
 
   registerWorkflowsSockets() {
     var self = this;
-    var unfinishedWorkflowIds = $('table.workflows').data("workflows").filter(function(w) { return w.status != "finished" }).map(w => w.id)
-    for( var i = 0; i < unfinishedWorkflowIds.length; i++ ) {
-      self.listenToWorkflowSocket(unfinishedWorkflowIds[i])
-    }
+    if ($('table.workflows').data("workflows")) {
+       var unfinishedWorkflowIds = $('table.workflows').data("workflows").filter(function(w) { return w.status != "finished" }).map(w => w.id)
+      for( var i = 0; i < unfinishedWorkflowIds.length; i++ ) {
+        self.listenToWorkflowSocket(unfinishedWorkflowIds[i])
+      }
+    }   
   }
 
   listenToWorkflowSocket(workflow_id) {

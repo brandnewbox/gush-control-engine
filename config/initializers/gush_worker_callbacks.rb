@@ -4,7 +4,7 @@ class Gush::Worker
     broadcast_to( "workflow_progress_channel_#{workflow_id}", workflow )
   end
 
-  def broadcast_to(channel, workflow, job)
+  def broadcast_to(channel, workflow)
     ActionCable.server.broadcast( channel, workflow.to_hash )
   end    
 end
