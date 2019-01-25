@@ -12,10 +12,10 @@ this.Workflow = class Workflow {
 
   templateData() {
     if (this.data.started_at) {
-      this.data.started_at  = moment(this.data.started_at  * 1000).format("DD/MM/YYYY HH:mm");
+      this.data.started_at  = moment(this.data.started_at  * 1000).format("DD/MM/YYYY HH:mm:ss");
     }
     if (this.data.finished_at) {
-      this.data.finished_at = moment(this.data.finished_at * 1000).format("DD/MM/YYYY HH:mm");
+      this.data.finished_at = moment(this.data.finished_at * 1000).format("DD/MM/YYYY HH:mm:ss");
     }
 
     return this.data;
@@ -26,6 +26,7 @@ this.Workflow = class Workflow {
   }
 
   calculateProgress() {
+    // console.log(this.data)
     const progress = (this.data.finished*100) / this.data.total;
     if (progress === 100) { this.markAsCompleted(); }
 

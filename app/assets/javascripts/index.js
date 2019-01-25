@@ -15,3 +15,5 @@
 //= require templates
 //= require view
 //= require app
+//= require cable
+//= require_tree .

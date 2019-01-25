@@ -15,7 +15,8 @@ this.Gush = class Gush {
   }
 
   initialize(jobs) {
-    // this.registerSockets();
+    this.registerNewWorkflowsSocket();
+    this.registerWorkflowsSockets();    
     this.displayCurrentWorkflows();
     return this.displayJobsOverview(jobs);
   }
@@ -69,13 +70,41 @@ this.Gush = class Gush {
     return workersSocket.onclose   = this._onClose;
   }
 
-  registerWorkflowsSocket() {
-    const workflowsSocket = new WebSocket(this._socketUrl(`gush/workflows/subscribe/workflows.status`));
+  registerNewWorkflowsSocket() {
+    var self = this;
+    App.cable.subscriptions.create(
+      { 
+        channel: "NewWorkflowsChannel"
+      },{ 
+        received: function(message) {
+          self._addWorkflow(message);
+          self.listenToWorkflowSocket(message.id);
+        }
+      }
+    );
+  }
 
-    workflowsSocket.onopen    = this._onOpen;
-    workflowsSocket.onerror   = this._onError;
-    workflowsSocket.onmessage = this._onWorkflowStatusChange;
-    return workflowsSocket.onclose   = this._onClose;
+  registerWorkflowsSockets() {
+    var self = this;
+    var unfinishedWorkflowIds = $('table.workflows').data("workflows").filter(function(w) { return w.status != "finished" }).map(w => w.id)
+    for( var i = 0; i < unfinishedWorkflowIds.length; i++ ) {
+      self.listenToWorkflowSocket(unfinishedWorkflowIds[i])
+    }
+  }
+
+  listenToWorkflowSocket(workflow_id) {
+    var self = this;
+    App.cable.subscriptions.create(
+      { 
+        channel: "WorkflowProgressChannel", 
+        workflow_id: workflow_id
+      },{ 
+        received: function(message) {
+          self._onWorkflowStatusChange(message);
+          self._onJobSuccess(message.id);
+        }
+      }
+    );
   }
 
   registerMachinesSocket() {
@@ -102,7 +131,7 @@ this.Gush = class Gush {
 
   startWorkflow(workflow, el) {
     $.ajax({
-      url: `/gush/workflows/start/` + workflow,
+      url: `/gush/workflows/${workflow}/start`,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -120,20 +149,20 @@ this.Gush = class Gush {
 
   startJob(workflow, job, el) {
     return $.ajax({
-      url: `/gush/workflows/start/${workflow}/job/${job}`,
+      url: `/gush/workflows/${workflow}/jobs/${job}/start`,
       type: "POST",
       error(response) {
         return console.log(response);
       },
       success() {
-        return window.location.href = `/gush/workflows/show/${workflow}`;
+        return window.location.href = `/gush/workflows/${workflow}`;
       }
     });
   }
 
   stopWorkflow(workflow, el) {
     $.ajax({
-      url: `/gush/workflows/stop_workflow/` + workflow,
+      url: `/gush/workflows/${workflow}/stop`,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -152,7 +181,7 @@ this.Gush = class Gush {
   retryWorkflow(workflow_id) {
     return $.ajax({
       url: `/gush/workflows/${workflow_id}/restart_failed_jobs`,
-      type: "GET",
+      type: "POST",
       success: response => {
         return response.jobs.each(job => {
           if (job.failed) {
@@ -165,7 +194,7 @@ this.Gush = class Gush {
 
   createWorkflow(workflow) {
     return $.ajax({
-      url: `/gush/workflows/create/` + workflow,
+      url: `/gush/workflows/${workflow}` + workflow,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -178,7 +207,7 @@ this.Gush = class Gush {
 
   destroyWorkflow(workflow) {
     return $.ajax({
-      url: `/gush/workflows/purge/` + workflow,
+      url: `/gush/workflows/${workflow}/purge`,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -204,7 +233,7 @@ this.Gush = class Gush {
 
   removeLogs(workflow_id, job_name) {
     return $.ajax({
-      url: `/gush/workflows/purge_logs/${workflow_id}.${job_name}`,
+      url: `/gush/workflows/${workflow_id}/jobs/${job_name}/purge_logs`,
       type: "POST",
       error(response) {
         return console.log(response);
@@ -230,7 +259,6 @@ this.Gush = class Gush {
 
   _onStatus(message) {
     message = JSON.parse(message.data);
-    console.log(message);
     switch (message.status) {
       case "started":
         return this._onJobStart(message);
@@ -247,12 +275,11 @@ this.Gush = class Gush {
 
 
   _onWorkflowStatusChange(message) {
-    message = JSON.parse(message.data);
-    const workflow = this.workflows[message.workflow_id];
+    const workflow = this.workflows[message.id];
     if (workflow) {
       workflow.changeStatus(message.status);
       workflow.updateDates(message);
-      return $("table.workflows").find(`#${message.workflow_id}`).replaceWith(workflow.render());
+      return $("table.workflows").find(`#${message.id}`).replaceWith(workflow.render());
     }
   }
 
@@ -269,13 +296,13 @@ this.Gush = class Gush {
     return this._updateGraphStatus(message.workflow_id);
   }
 
-  _onJobSuccess(message) {
-    this._updateGraphStatus(message.workflow_id);
+  _onJobSuccess(workflow_id) {
+    // this._updateGraphStatus(workflow_id);
 
-    const workflow = this.workflows[message.workflow_id];
+    const workflow = this.workflows[workflow_id];
     if (workflow) {
       workflow.updateProgress();
-      return $("table.workflows").find(`#${message.workflow_id}`).replaceWith(workflow.render());
+      return $("table.workflows").find(`#${workflow_id}`).replaceWith(workflow.render());
     }
   }
 
@@ -300,7 +327,7 @@ this.Gush = class Gush {
 
   _updateGraphStatus(workflow_id) {
     return $.ajax({
-      url: `/gush/workflows/show/${workflow_id}.json`,
+      url: `/gush/workflows/${workflow_id}`,
       type: "GET",
       error(response) {
         return console.log(response);

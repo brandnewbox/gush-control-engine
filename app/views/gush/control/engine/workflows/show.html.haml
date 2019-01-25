@@ -4,7 +4,7 @@
       = @workflow.class
       %small= @workflow.id
       %small
-        %a{ href: "/gush/workflows" } Back to list
+        =link_to "Back to list", workflows_path
   .large-4.columns
     %br
     %ul.button-group

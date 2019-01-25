@@ -22,6 +22,7 @@ this.View = class View {
   }
 
   updateDates(data) {
+    console.log(data)
     this.params.started_at = data.started_at;
     return this.params.finished_at = data.finished_at;
   }

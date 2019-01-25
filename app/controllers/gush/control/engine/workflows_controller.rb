@@ -2,12 +2,12 @@ module Gush
   module Control
     module Engine
       class WorkflowsController < ActionController::Base
+        layout 'gush/control/engine/layouts/application'
         protect_from_forgery with: :exception
         skip_before_action :verify_authenticity_token
-        before_action :set_workflow, only: [:show, :restart_failed_jobs, :purge, :stop_workflow, :start_workflow, :start_job, :show_job]
-        layout 'gush/control/engine/layouts/application'
+        before_action :set_workflow, only: [:show, :restart_failed_jobs, :purge, :stop_workflow, :start_workflow]        
 
-        def index
+        def index          
           @workflows = gush.all_workflows
         end
 
@@ -31,24 +31,14 @@ module Gush
           head :ok
         end
 
-        def stop_workflow
+        def stop
           gush.stop_workflow(@workflow)
           @workflow.to_json
         end
 
-        def start_workflow
+        def start
           gush.start_workflow(@workflow, [])
           @workflow.to_json
-        end
-
-        def start_job
-          gush.start_workflow(@workflow, Array(params[:job_id]))
-          @workflow.to_json
-        end
-
-        def show_job
-          @job = @workflow.find_job(params[:job_id])
-          render template: "gush/control/engine/workflows/job"
         end
 
         private
@@ -58,7 +48,7 @@ module Gush
         end
 
         def set_workflow
-          @workflow = gush.find_workflow(params[:workflow_id])
+          @workflow = gush.find_workflow(params[:id])
         end
 
         def redis
