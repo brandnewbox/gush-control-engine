@@ -21,12 +21,12 @@ this.Templates = class Templates {
   }
 
   static action(data) {
-    const description = data.status === "Running" ? "Stop Workflow" : "Start workflow";
+    const description = data.status === "running" ? "Stop Workflow" : "Start Workflow";
     const buttonClass = {"Start workflow": "success", "Stop Workflow": "alert"};
-    const buttonAction = data.status === "Running" ? "stop" : "start";
+    const buttonAction = data.status === "running" ? "stop" : "start";
     const template = $("#workflow-action-template").html();
 
-    if (data.status !== "Finished") {
+    if (data.status !== "finished") {
       return Mustache.render(template, {workflow_id: data.workflow_id, action: buttonAction, classes: buttonClass[description], description});
     }
   }

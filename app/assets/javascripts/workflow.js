@@ -22,31 +22,25 @@ this.Workflow = class Workflow {
   }
 
   partialsData() {
-    return {progress: this.calculateProgress(), status: this.data.status, action: this.actionData()};
+    return {progress: this.calculateProgress(), status: (this.data.status.charAt(0).toUpperCase() + this.data.status.slice(1)), action: this.actionData()};
   }
 
   calculateProgress() {
-    // console.log(this.data)
     const progress = (this.data.finished*100) / this.data.total;
-    if (progress === 100) { this.markAsCompleted(); }
-
     return progress;
   }
 
   updateProgress() {
-    this.data.finished += 1;
+    // if (this.data.finished >= this.data.total) return
+    // this.data.finished += 1;
     return this.view.updateProgress(this.calculateProgress());
   }
 
-  changeStatus(status) {
-    this.data.status = status;
-    if (this.view) { return this.view.updateStatus(status); }
+  changeStatus() {
+    if (this.view) { return this.view.updateStatus(this.data.status); }
   }
 
-  updateDates(data) {
-    this.data.started_at = data.started_at;
-    this.data.finished_at = data.finished_at;
-
+  updateDates() {
     this.templateData();
     if (this.view) { return this.view.updateDates(this.data); }
   }

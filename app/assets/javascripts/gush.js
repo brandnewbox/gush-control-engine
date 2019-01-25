@@ -2,7 +2,6 @@ this.Gush = class Gush {
   constructor() {
     this.registerLogsSocket = this.registerLogsSocket.bind(this);
     this._onStatus = this._onStatus.bind(this);
-    this._onWorkflowStatusChange = this._onWorkflowStatusChange.bind(this);
     this._onMachineStatusMessage = this._onMachineStatusMessage.bind(this);
     this._onJobStart = this._onJobStart.bind(this);
     this._onJobSuccess = this._onJobSuccess.bind(this);
@@ -22,7 +21,6 @@ this.Gush = class Gush {
   }
 
   registerSockets() {
-    this.registerWorkersSocket();
     this.registerWorkflowsSocket();
     return this.registerMachinesSocket();
   }
@@ -61,15 +59,6 @@ this.Gush = class Gush {
     }
   }
 
-  registerWorkersSocket() {
-    const workersSocket = new WebSocket(this._socketUrl(`gush/workflows/subscribe/workers.status`));
-
-    workersSocket.onopen    = this._onOpen;
-    workersSocket.onerror   = this._onError;
-    workersSocket.onmessage = this._onStatus;
-    return workersSocket.onclose   = this._onClose;
-  }
-
   registerNewWorkflowsSocket() {
     var self = this;
     App.cable.subscriptions.create(
@@ -100,8 +89,7 @@ this.Gush = class Gush {
         workflow_id: workflow_id
       },{ 
         received: function(message) {
-          self._onWorkflowStatusChange(message);
-          self._onJobSuccess(message.id);
+          self._onJobSuccess(message);
         }
       }
     );
@@ -273,16 +261,6 @@ this.Gush = class Gush {
     }
   }
 
-
-  _onWorkflowStatusChange(message) {
-    const workflow = this.workflows[message.id];
-    if (workflow) {
-      workflow.changeStatus(message.status);
-      workflow.updateDates(message);
-      return $("table.workflows").find(`#${message.id}`).replaceWith(workflow.render());
-    }
-  }
-
   _onMachineStatusMessage(message) {
       message = JSON.parse(message.data);
       return message.each(machine => {
@@ -296,13 +274,16 @@ this.Gush = class Gush {
     return this._updateGraphStatus(message.workflow_id);
   }
 
-  _onJobSuccess(workflow_id) {
-    // this._updateGraphStatus(workflow_id);
+  _onJobSuccess(workflow_params) {
+    // this._updateGraphStatus(workflow_params_id);
 
-    const workflow = this.workflows[workflow_id];
+    var workflow = this.workflows[workflow_params.id];
+    workflow.data = workflow_params
     if (workflow) {
+      workflow.changeStatus();
+      workflow.updateDates();
       workflow.updateProgress();
-      return $("table.workflows").find(`#${workflow_id}`).replaceWith(workflow.render());
+      return $("table.workflows").find(`#${workflow_params.id}`).replaceWith(workflow.render());
     }
   }
 
@@ -313,7 +294,7 @@ this.Gush = class Gush {
 
     const workflow = this.workflows[message.workflow_id];
     if (workflow) {
-      workflow.markAsFailed();
+      workflow.markAsFailed();      
       return $("table.workflows").find(`#${message.workflow_id}`).replaceWith(workflow.render());
     }
   }
