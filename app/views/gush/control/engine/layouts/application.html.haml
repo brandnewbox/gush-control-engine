@@ -9,6 +9,12 @@
     = javascript_include_tag 'index', 'data-turbolinks-track': 'reload'
 
   %body
+    %nav.top-bar.fixed{ 'data-topbar': true }
+      %ul.title-area
+        %li.name 
+          %h1 
+            %a{ href: "/gush/workflows" } Gush Control Engine
+
     = yield
     #modalBox.reveal-modal.text-center{ "data-reveal": "data-reval", "data-reveal-id": "modalBox" }
       .data
