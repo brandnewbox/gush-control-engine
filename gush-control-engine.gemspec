@@ -28,6 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rails", ">= 5.0.0"
   spec.add_dependency "gush"
   spec.add_dependency "haml-rails", "~> 1.0"
-  spec.add_dependency "coffee-rails"
 
 end

@@ -7,10 +7,10 @@ this.Graph = class Graph {
   populate(nodes, links) {
     nodes.forEach(node => {
       return this.digraph.addNode(node.name, {
-        finished: node.finished,
-        failed: node.failed,
-        running: node.running,
-        enqueued: node.enqueued,
+        finished: !!node.finished_at,
+        failed: !!node.failed_at,
+        running: !!node.started_at,
+        enqueued: !!node.enqueued_at,
         label: node.klass
       }
       );

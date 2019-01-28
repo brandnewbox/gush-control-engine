@@ -8,10 +8,6 @@ text {
   font-size: 14px;
 }
 
-.node {
-  cursor: pointer;
-}
-
 .node rect {
   stroke-width: 1.5px;
   stroke: #333;

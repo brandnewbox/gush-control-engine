@@ -9,7 +9,6 @@
 //= require vendor/dagre-d3.min
 //= require gush
 //= require job
-//= require machine
 //= require workflow
 //= require graph
 //= require templates

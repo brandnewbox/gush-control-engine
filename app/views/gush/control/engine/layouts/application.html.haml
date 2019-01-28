@@ -35,13 +35,7 @@
           {{started_at}}
         %td.finished_at
           {{finished_at}}
-        -# %td
-        -#   {{> action}}
 
-
-    -# %script{ id: "workflow-action-template", type: "x-tmpl-mustache" }
-    -#   %a{ class: "button tiny radius start-workflow {{classes}}", "data-action": "{{action}}", "data-workflow-id": "{{workflow_id}}" }
-    -#     {{description}}
 
     %script{ id: "node-template", type:"x-tmpl-mustache" }
       %tr{ class: "{{class}}" }
@@ -53,16 +47,6 @@
           {{started_at}}
         %td
           {{finished_at}}
-    %script{ id: "machine-template", type:"x-tmpl-mustache" }
-      %tr{ "data-id": "{{pid}}" }
-        %td
-          {{pid}}
-        %td
-          {{host}}
-        %td
-          {{jobs}}
-        %td
-          {{status}}
 
 :javascript
   window.currentSockets = "#{controller.controller_name + '_' + controller.action_name}"

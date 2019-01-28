@@ -5,7 +5,7 @@ module Gush
         layout 'gush/control/engine/layouts/application'
         protect_from_forgery with: :exception
         skip_before_action :verify_authenticity_token
-        before_action :set_workflow, only: [:show, :restart_failed_jobs, :purge, :stop, :start]        
+        before_action :set_workflow, only: [:show, :purge, :stop, :start]        
 
         def index          
           @workflows = gush.all_workflows
@@ -15,19 +15,14 @@ module Gush
           get_jobs_for_workflow
         end
 
-        def restart_failed_jobs
-          get_jobs_for_workflow
-          render json: { jobs: @jobs, links: @links }.to_json
-        end
-
         def purge
-          remove_workflow_and_logs(@workflow)
+          remove_workflow(@workflow)
           head :ok
         end
 
         def purge_all
           completed = gush.all_workflows.select(&:finished?)
-          completed.each { |workflow| remove_workflow_and_logs(workflow) }
+          completed.each { |workflow| remove_workflow(workflow) }
           head :ok
         end
 
@@ -59,17 +54,8 @@ module Gush
           Time.at(timestamp).asctime if timestamp
         end
 
-        def remove_workflow_and_logs(workflow)
-          remove_workflow(workflow)
-          remove_logs(workflow)
-        end
-
         def remove_workflow(workflow)
           gush.destroy_workflow(workflow)
-        end
-
-        def remove_logs(workflow)
-          redis.keys("gush.logs.#{workflow.id}.*").each {|key| redis.del(key) }
         end
 
         def get_jobs_for_workflow
@@ -81,12 +67,10 @@ module Gush
             @jobs << {
               name:         job.name,
               klass:        job.class.to_s,
-              finished:     job.finished?,
-              started_at:   format_time(job.started_at),
-              finished_at:  format_time(job.finished_at),
-              running:      job.running?,
-              enqueued:     job.enqueued?,
-              failed:       job.failed?
+              started_at:   job.started_at,
+              finished_at:  job.finished_at,
+              enqueued_at:  job.enqueued_at,
+              failed_at:    job.failed_at
             }
             @links << {source: "Start", target: job.name, type: "flow"} if job.incoming.empty?
             job.outgoing.each{ |out| @links << {source: job.name, target: out, type: "flow"} }
