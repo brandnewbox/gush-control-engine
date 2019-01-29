@@ -8,6 +8,8 @@ In your routes file, add:
 mount Gush::Control::Engine::Engine, at: "/gush"
 ```
 
+Now point your browser to `http://localhost:3000/gush`, or whatever your local endpoint is.
+
 ## Installation
 Add this line to your application's Gemfile:
 
