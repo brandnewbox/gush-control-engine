@@ -2,7 +2,11 @@
 Short description and motivation.
 
 ## Usage
-How to use my plugin.
+In your routes file, add:
+
+```Ruby
+mount Gush::Control::Engine::Engine, at: "/gush"
+```
 
 ## Installation
 Add this line to your application's Gemfile:
