@@ -63,7 +63,7 @@ this.Gush = class Gush {
       },{ 
         received: function(message) {
           self._addWorkflow(message);
-          self.listenToWorkflowSocket(message.id);
+          self.listenToWorkflowSocket(message.id, self._onJobSuccess);
         }
       }
     );
@@ -80,8 +80,9 @@ this.Gush = class Gush {
   }
 
   registerSingleWorkflowSockets() {
+    var self = this
     var workflow = $('#workflow').data("workflow")
-    this.listenToWorkflowSocket(workflow.id, this._onJobUpdate)
+    this.listenToWorkflowSocket(workflow.id, self._onJobUpdate)
   }
 
   listenToWorkflowSocket(workflow_id, callback) {
@@ -92,7 +93,6 @@ this.Gush = class Gush {
         workflow_id: workflow_id
       },{ 
         received: function(message) {
-
           callback(message, self)
         }
       }
