@@ -2,7 +2,21 @@
 Short description and motivation.
 
 ## Usage
-How to use my plugin.
+In your routes file, add:
+
+```Ruby
+mount Gush::Control::Engine::Engine, at: "/gush"
+```
+
+If you are using Devise, you have access to a handful of helpers that allow you to require authorization / authentication for this (or any other) engine:
+
+```Ruby
+authenticate :user, ->(user) { user.roles?(:admin) } do
+  mount Gush::Control::Engine::Engine => "/gush"
+end
+```
+
+Now point your browser to `http://localhost:3000/gush`, or whatever your local endpoint is.
 
 ## Installation
 Add this line to your application's Gemfile:
